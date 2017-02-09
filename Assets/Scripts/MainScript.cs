@@ -15,10 +15,12 @@ public class MainScript : MonoBehaviour {
     public GameObject PlayerShipPrefab;
     [HideInInspector] public GameObject PlayerShipInstance;
     [HideInInspector] public LevelDefinition MapInstance;
+    [HideInInspector] public Loader LoaderInstance;
 
     float WavesTime;
     int ActiveWave;
     bool FinalWave;
+    public bool LevelLoaded = false;
 
     static MainScript instance = null;
     public static MainScript GetInstance()
@@ -34,42 +36,72 @@ public class MainScript : MonoBehaviour {
     // Use this for initialization
     void Init()
     {
+        LevelLoaded = false;
         PlayerShipInstance = Instantiate(PlayerShipPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+        PlayerShipInstance.SetActive(false);
     }
 
     void Start ()
     {
-        int i;
         maxenemies = 200;
         EnemyShipField = new EnemyShipStruct[maxenemies];
+    }
 
-        Vector3 pos;       
-        pos = Vector3.zero;
-        pos.x = 2;
-        pos.y = 5;
-        PlayerShipInstance.transform.position = pos;
+    public void InitLevel(bool init)
+    {
+        int i;
+        Vector3 pos;
 
-        
         for (i = 0; i < maxenemies; i++)
         {
+            if (EnemyShipField[i].enemyinstance != null) Destroy(EnemyShipField[i].enemyinstance.gameObject);
             EnemyShipField[i].enemyinstance = null;
         }
 
-        MapInstance = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
-        MapInstance.InitMap();
-        WavesTime = 0;
-        ActiveWave = 0;
-        FinalWave = false;
+        if (init)
+        {
+            LoaderInstance = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
+
+            MapInstance = GameObject.FindObjectOfType(typeof(LevelDefinition)) as LevelDefinition;
+            MapInstance.InitMap();
+            WavesTime = 0;
+            ActiveWave = 0;
+            FinalWave = false;
+
+            PlayerShipInstance.SetActive(true);
+
+            pos = Vector3.zero;
+            pos.x = 2;
+            pos.y = 5;
+            PlayerShipInstance.transform.position = pos;
+
+            LevelLoaded = true;
+        }
+        else
+        {
+            LevelLoaded = false;
+            PlayerShipInstance.SetActive(false);
+            StartCoroutine(LoaderInstance.UnLoadLevel());
+        }
     }
 
     // Update is called once per frame
     void Update ()
     {
         float delta;
-        delta = Time.deltaTime;
-        UpdateEnemies(delta);
-        SetCamera(delta);
-        WaveControl(delta);
+
+        if (LevelLoaded)
+        {
+            delta = Time.deltaTime;
+            UpdateEnemies(delta);
+            SetCamera(delta);
+            WaveControl(delta);
+
+            if (Input.GetKeyDown("escape"))
+            {
+                InitLevel(false);
+            }
+        }
     }
 
     void WaveControl(float delta)
@@ -201,4 +233,6 @@ public class MainScript : MonoBehaviour {
         r = Random.Range(0, audiofield.Length);
         AudioSource.PlayClipAtPoint(audiofield[r], where);
     }
+
+
 }

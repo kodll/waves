@@ -50,6 +50,7 @@ public class Nest : MonoBehaviour {
                             {
                                 MainScript.GetInstance().EnemyShipField[i].enemyinstance = Instantiate(EnemyShipPrefab, this.transform.position, Quaternion.identity) as Enemy;
                             }
+                            MainScript.GetInstance().EnemyShipField[i].enemyinstance.transform.SetParent(MainScript.GetInstance().MapInstance.transform);
                             MainScript.GetInstance().EnemyShipField[i].enemybody = MainScript.GetInstance().EnemyShipField[i].enemyinstance.GetComponent<Rigidbody2D>();
                             MainScript.GetInstance().EnemyShipField[i].enemyinstance.SetId(i);
 

@@ -44,7 +44,7 @@ public class ShipController : MonoBehaviour {
                 //Generating projectile
 
                 projectile = Instantiate(ProjectileTemplate, this.transform.position, this.transform.rotation) as Projectile;
-
+                projectile.transform.SetParent(MainScript.GetInstance().MapInstance.transform);
 
                 NearestEnemy = MainScript.GetInstance().GetNearestEnemyId(this.gameObject,30);
                 if (NearestEnemy != -1)

@@ -25,7 +25,7 @@ public class LevelDefinition : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        MainScript.GetInstance();
+        
     }
 	
 	// Update is called once per frame
