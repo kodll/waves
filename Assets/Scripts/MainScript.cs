@@ -160,7 +160,7 @@ public class MainScript : MonoBehaviour {
             dir = movingbody.transform.right;
         }
 
-        movingbody.AddForce(dir.normalized * speed);
+        movingbody.AddForce(dir.normalized * speed * Time.deltaTime * 70);
 
         if (movingbody.velocity.magnitude > speedlimit)
         {

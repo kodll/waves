@@ -25,6 +25,16 @@ public class LevelDefinition : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        Loader test;
+
+        MainScript.GetInstance();
+
+        test = GameObject.FindObjectOfType(typeof(Loader)) as Loader;
+        if (test==null)
+        {
+            MainScript.GetInstance().InitLevel(true);
+            Camera.main.GetComponent<AudioListener>().enabled = true;
+        }
         
     }
 	
