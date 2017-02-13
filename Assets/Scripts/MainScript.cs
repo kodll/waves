@@ -12,15 +12,23 @@ public class MainScript : MonoBehaviour {
     [HideInInspector] public int maxenemies;
     public EnemyShipStruct[] EnemyShipField;
 
-    public GameObject PlayerShipPrefab;
-    [HideInInspector] public GameObject PlayerShipInstance;
+    public ShipController PlayerShipPrefab;
+    [HideInInspector] public ShipController PlayerShipInstance;
     [HideInInspector] public LevelDefinition MapInstance;
-    [HideInInspector] public Loader LoaderInstance;
+    [HideInInspector] public Loader LoaderInstance = null;
 
     float WavesTime;
     int ActiveWave;
     bool FinalWave;
-    public bool LevelLoaded = false;
+    [HideInInspector] public bool LevelLoaded = false;
+    public Loader LoaderPrefab;
+    public GUInterface GuiPrefab;
+    [HideInInspector] public GUInterface GuiInstance;
+
+    //-------------SAVE-------------------
+    public int Coins = 0;
+    public float MaxHealth = 100;
+    //------------------------------------
 
     static MainScript instance = null;
     public static MainScript GetInstance()
@@ -37,8 +45,9 @@ public class MainScript : MonoBehaviour {
     void Init()
     {
         LevelLoaded = false;
-        PlayerShipInstance = Instantiate(PlayerShipPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-        PlayerShipInstance.SetActive(false);
+        PlayerShipInstance = Instantiate(PlayerShipPrefab, Vector3.zero, Quaternion.identity) as ShipController;
+        PlayerShipInstance.gameObject.SetActive(false);
+        GuiInstance = Instantiate(GuiPrefab) as GUInterface;
     }
 
     void Start ()
@@ -50,7 +59,6 @@ public class MainScript : MonoBehaviour {
     public void InitLevel(bool init)
     {
         int i;
-        Vector3 pos;
 
         for (i = 0; i < maxenemies; i++)
         {
@@ -68,20 +76,27 @@ public class MainScript : MonoBehaviour {
             ActiveWave = 0;
             FinalWave = false;
 
-            PlayerShipInstance.SetActive(true);
+            PlayerShipInstance.transform.position = MapInstance.LevelStart.transform.position;
 
-            pos = Vector3.zero;
-            pos.x = 2;
-            pos.y = 5;
-            PlayerShipInstance.transform.position = pos;
+            PlayerShipInstance.gameObject.SetActive(true);
+
+            GuiInstance.transform.SetParent(LoaderInstance.transform);
+            PlayerShipInstance.transform.SetParent(LoaderInstance.transform);
+
+            PlayerShipInstance.ActualHealth = MaxHealth;
+            PlayerShipInstance.ButtonFire = false;
 
             LevelLoaded = true;
+            GuiInstance.InitGui();
         }
         else
         {
             LevelLoaded = false;
-            PlayerShipInstance.SetActive(false);
-            StartCoroutine(LoaderInstance.UnLoadLevel());
+            PlayerShipInstance.gameObject.SetActive(false);
+            if (LoaderInstance != null)
+            {
+                StartCoroutine(LoaderInstance.UnLoadLevel());
+            }
         }
     }
 
@@ -97,9 +112,20 @@ public class MainScript : MonoBehaviour {
             SetCamera(delta);
             WaveControl(delta);
 
-            if (Input.GetKeyDown("escape"))
+            if (Input.GetButtonDown("Exit"))
             {
-                InitLevel(false);
+                if (LoaderInstance != null)
+                {
+                    if (LoaderInstance.activemenu == -1) //Open Pause Menu
+                    {
+                        LoaderInstance.OpenMenu(1);
+                        Time.timeScale = 0.0f;
+                    }
+                    else if (LoaderInstance.activemenu == 1) //Back to Game
+                    {
+                        LoaderInstance.ResumeGame();
+                    }
+                }
             }
         }
     }
@@ -146,35 +172,64 @@ public class MainScript : MonoBehaviour {
         return Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg);
     }
 
-    public void MoveToDirection(float delta, Rigidbody2D movingbody, GameObject finalposition, float speed, float speedlimit, bool rotatealways)
+    public void MoveToDirection(float delta, Rigidbody2D movingbody, GameObject finalposition, float speed, float speedlimit, bool rotatealways, float magnetdist)
     {
         float atan2;
         Vector3 dir;
+        Vector3 distvect;
+        float dist;
+        float power;
 
+        distvect = Vector3.zero;
+        dist = -10;
         if (finalposition != null)
         {
-            dir = finalposition.transform.position - movingbody.transform.position;    
+            distvect = finalposition.transform.position - movingbody.transform.position;
+            dist = distvect.magnitude;
+        }
+
+        if (dist < magnetdist || magnetdist == -1)
+        {
+            if (finalposition != null)
+            {
+                dir = finalposition.transform.position - movingbody.transform.position;
+            }
+            else
+            {
+                dir = movingbody.transform.right;
+            }
+
+            power = 1;
+            if (magnetdist != -1)
+            {
+                power = Mathf.Cos(dist / magnetdist * Mathf.PI / 2 + 0.5f);
+            }
+
+            movingbody.AddForce(dir.normalized * speed * Time.deltaTime * 70);
+
+            if (movingbody.velocity.magnitude > speedlimit * power)
+            {
+                movingbody.velocity = movingbody.velocity.normalized * speedlimit * power;
+            }
+
+            if (movingbody.velocity.magnitude > 0.5 && rotatealways)
+            {
+                atan2 = Mathf.Atan2(movingbody.velocity.y, movingbody.velocity.x);
+                movingbody.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg);
+                //movingbody.gameObject.transform.rotation = Quaternion.Lerp(movingbody.gameObject.transform.rotation, Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg), 0.1f);
+
+            }
+            if (speedlimit == 0 && rotatealways && distvect != Vector3.zero)
+            {
+                atan2 = Mathf.Atan2(distvect.y, distvect.x);
+                movingbody.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg);
+            }
+
         }
         else
         {
-            dir = movingbody.transform.right;
+            movingbody.velocity = Vector3.zero;
         }
-
-        movingbody.AddForce(dir.normalized * speed * Time.deltaTime * 70);
-
-        if (movingbody.velocity.magnitude > speedlimit)
-        {
-            movingbody.velocity = movingbody.velocity.normalized * speedlimit;
-        }
-
-        if (movingbody.velocity.magnitude > 0.5 && rotatealways)
-        {
-            atan2 = Mathf.Atan2(movingbody.velocity.y, movingbody.velocity.x);
-            movingbody.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg);
-            //movingbody.gameObject.transform.rotation = Quaternion.Lerp(movingbody.gameObject.transform.rotation, Quaternion.Euler(0f, 0f, atan2 * Mathf.Rad2Deg), 0.1f);
-
-        }
-        
     }
 
     void UpdateEnemies(float delta)
@@ -184,7 +239,7 @@ public class MainScript : MonoBehaviour {
 		{
             if (EnemyShipField[i].enemyinstance != null)
             {
-                MoveToDirection(delta, EnemyShipField[i].enemybody, PlayerShipInstance, EnemyShipField[i].enemyinstance.acceleration, EnemyShipField[i].enemyinstance.speedlimit, EnemyShipField[i].enemyinstance.allowrotation);
+                MoveToDirection(delta, EnemyShipField[i].enemybody, PlayerShipInstance.gameObject, EnemyShipField[i].enemyinstance.acceleration, EnemyShipField[i].enemyinstance.speedlimit, EnemyShipField[i].enemyinstance.allowrotation, EnemyShipField[i].enemyinstance.magnetdistance);
             }
         }
     }

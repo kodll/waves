@@ -31,13 +31,13 @@ public class Nest : MonoBehaviour {
         if (ActiveNest)
         {
             ActualNestTime = ActualNestTime + delta;
-            if (ActualNestTime > BirthDelay)
+            if (ActualNestTime >= BirthDelay)
             {
-                ActualBirthRate = ActualBirthRate + delta;
-                if (ActualBirthRate> BirthRate)
+                ActualBirthRate = ActualBirthRate - delta;
+                if (ActualBirthRate<= 0)
                 {
                     //Spawn Enemy
-                    ActualBirthRate = 0;                    
+                    ActualBirthRate = BirthRate;                    
                     for (i = 0; i < MainScript.GetInstance().maxenemies; i++)
                     {
                         if (MainScript.GetInstance().EnemyShipField[i].enemyinstance == null)
@@ -54,7 +54,7 @@ public class Nest : MonoBehaviour {
                             MainScript.GetInstance().EnemyShipField[i].enemybody = MainScript.GetInstance().EnemyShipField[i].enemyinstance.GetComponent<Rigidbody2D>();
                             MainScript.GetInstance().EnemyShipField[i].enemyinstance.SetId(i);
 
-                            MainScript.GetInstance().MoveToDirection(delta, MainScript.GetInstance().EnemyShipField[i].enemybody, MainScript.GetInstance().PlayerShipInstance, MainScript.GetInstance().EnemyShipField[i].enemyinstance.acceleration, MainScript.GetInstance().EnemyShipField[i].enemyinstance.speedlimit, MainScript.GetInstance().EnemyShipField[i].enemyinstance.allowrotation);
+                            MainScript.GetInstance().MoveToDirection(delta, MainScript.GetInstance().EnemyShipField[i].enemybody, MainScript.GetInstance().PlayerShipInstance.gameObject, MainScript.GetInstance().EnemyShipField[i].enemyinstance.acceleration, MainScript.GetInstance().EnemyShipField[i].enemyinstance.speedlimit, MainScript.GetInstance().EnemyShipField[i].enemyinstance.allowrotation, MainScript.GetInstance().EnemyShipField[i].enemyinstance.magnetdistance);
 
                             break;
                         }

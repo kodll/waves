@@ -5,11 +5,12 @@ using UnityEngine;
 public class ShipController : MonoBehaviour {
 
     Vector2 joypad;
-    [HideInInspector] bool ButtonFire;
+    [HideInInspector] public bool ButtonFire;
     public float Speed;
     public float SpeedLimit;
     public float RotatingSpeed;
     public float FireRate;
+    public float ActualHealth;
 
     public AudioClip[] LaserSoundField;
 
@@ -27,10 +28,16 @@ public class ShipController : MonoBehaviour {
 	void Update () {
         float delta;
         delta = Time.deltaTime;
-        GetControls(delta);
+        GetControls();
         MoveShip(delta);
         WeaponUpdate(delta);
-	}
+
+        if (MainScript.GetInstance().GuiInstance.healthbarinstance.displayedhealth <= 0)
+        {
+            MainScript.GetInstance().InitLevel(false);
+        }
+        
+    }
 
     void WeaponUpdate(float delta)
     {
@@ -93,7 +100,20 @@ public class ShipController : MonoBehaviour {
 
     }
 
-    void GetControls(float delta)
+    public void SetDamage(float damage)
+    {
+        ActualHealth -= damage;
+        if (ActualHealth <= 0)
+        {
+            ActualHealth = 0;
+        }
+        if (MainScript.GetInstance().GuiInstance.healthbarinstance != null)
+        {
+            MainScript.GetInstance().GuiInstance.healthbarinstance.SetHealth(MainScript.GetInstance().PlayerShipInstance.ActualHealth, MainScript.GetInstance().MaxHealth, true);
+        }
+    }
+
+    void SetControlValues()
     {
         joypad.x = Input.GetAxis("Horizontal");
         joypad.y = Input.GetAxis("Vertical");
@@ -105,6 +125,35 @@ public class ShipController : MonoBehaviour {
         if (Input.GetButtonUp("Fire1"))
         {
             ButtonFire = false;
+        }
+    }
+
+    void GetControls()
+    {
+        if (MainScript.GetInstance().LoaderInstance == null)
+        {
+            SetControlValues();
+        }
+        else if (MainScript.GetInstance().LoaderInstance.activemenu == -1)
+        {
+            SetControlValues();
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        GameObject inst;
+
+        if (coll.gameObject.tag == "EnemyShip")
+        {
+            //MainScript.GetInstance().GuiInstance.healthbarinstance.SetHealth();
+
+            SetDamage(10);
+
+            //coll.gameObject.GetComponent<Enemy>().SetDamage(damage);
+            //inst = Instantiate(wallexplosion, this.transform.position, Quaternion.identity) as GameObject;
+            //Destroy(inst.gameObject, 1);
+            //Destroy(this.gameObject);
         }
     }
 }

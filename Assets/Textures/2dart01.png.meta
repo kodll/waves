@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: e353e6a673c8a8e45bb064411cf1aadf
-timeCreated: 1485732487
+timeCreated: 1486933260
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -20,6 +20,8 @@ TextureImporter:
     21300026: 2dart01_0
     21300028: 2dart01_2
     21300030: wave_circleborder
+    21300032: wave_rect
+    21300034: wave_rectslider
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -279,7 +281,7 @@ TextureImporter:
         width: 5
         height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -292,7 +294,7 @@ TextureImporter:
         width: 6
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -306,6 +308,32 @@ TextureImporter:
         height: 240
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: wave_rect
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 605
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: wave_rectslider
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 605
+        width: 20
+        height: 20
+      alignment: 9
+      pivot: {x: 0, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0

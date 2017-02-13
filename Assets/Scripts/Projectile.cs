@@ -29,31 +29,18 @@ public class Projectile : MonoBehaviour {
         {
             if (MainScript.GetInstance().EnemyShipField[nearestenemyID].enemyinstance != null)
             {
-                MainScript.GetInstance().MoveToDirection(delta, projectilebody, MainScript.GetInstance().EnemyShipField[nearestenemyID].enemyinstance.gameObject, acceleration, speedlimit, true);
+                MainScript.GetInstance().MoveToDirection(delta, projectilebody, MainScript.GetInstance().EnemyShipField[nearestenemyID].enemyinstance.gameObject, acceleration, speedlimit, true, Mathf.Infinity);
             }
             else
             {
                 nearestenemyID = -1;
-                /*
-                id = MainScript.GetInstance().GetNearestEnemyId(this.gameObject, projectilelimitdeg);
-                if (id != -1)
-                {
-                    nearestenemyID = id;
-                    MainScript.GetInstance().EnemyShipField[nearestenemyID].enemyinstance.IsTargeted = true;
-                }
-                else
-                {
-                    //Destroy(this.gameObject);
-                    nearestenemyID = -1;
-                }
-                */
             }
         }
         
         if (nearestenemyID == -1)
         {
 
-            MainScript.GetInstance().MoveToDirection(delta, projectilebody, null, acceleration, speedlimit, true);
+            MainScript.GetInstance().MoveToDirection(delta, projectilebody, null, acceleration, speedlimit, true, Mathf.Infinity);
         }
 
     }
@@ -72,8 +59,9 @@ public class Projectile : MonoBehaviour {
 
         if (coll.gameObject.tag == "EnemyShip")
         {
-            coll.gameObject.GetComponent<Enemy>().lives -= damage;
-
+            coll.gameObject.GetComponent<Enemy>().SetDamage(damage);
+            inst = Instantiate(wallexplosion, this.transform.position, Quaternion.identity) as GameObject;
+            Destroy(inst.gameObject, 1);
             Destroy(this.gameObject);
         }
         else
