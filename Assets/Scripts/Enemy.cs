@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour {
     public HealthBar healthbarprefab;
     [HideInInspector] public HealthBar healthbarinstance = null;
 
-    //[HideInInspector] public bool IsTargeted = false;
+    public EnemyWeapon[] WeaponSystems;
 
     // Update is called once per frame
 
@@ -41,6 +41,18 @@ public class Enemy : MonoBehaviour {
             if (healthbarinstance == null)
             {
                 DisplayHealthBar(true);
+            }
+
+            if (healthbarinstance.displayedhealth <= 0)
+            {
+                lives = 0;
+                inst = Instantiate(explosion, this.transform.position, Quaternion.identity) as GameObject;
+
+                MainScript.GetInstance().PlayRandomSound(explosionSoundField, this.transform.position);
+
+                Destroy(inst.gameObject, 1);
+                Destroy(this.gameObject);
+                MainScript.GetInstance().GuiInstance.AddCoins(1);
             }
         }
 
@@ -87,17 +99,7 @@ public class Enemy : MonoBehaviour {
         GameObject inst;
 
         lives -= damage;
-        if (lives<=0)
-        {
-            lives = 0;
-            inst = Instantiate(explosion, this.transform.position, Quaternion.identity) as GameObject;
-
-            MainScript.GetInstance().PlayRandomSound(explosionSoundField, this.transform.position);
-
-            Destroy(inst.gameObject, 1);
-            Destroy(this.gameObject);
-            MainScript.GetInstance().GuiInstance.AddCoins(1);
-        }
+        
         if (healthbarinstance == null)
         {
             DisplayHealthBar(true);

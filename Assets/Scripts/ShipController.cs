@@ -18,10 +18,17 @@ public class ShipController : MonoBehaviour {
     public Projectile ProjectileTemplate;
     Rigidbody2D ShipBody;
 
+    public Link JetsTemplate;
+    [HideInInspector] public Link JetsInstance;
+
     // Use this for initialization
     void Start () {
         ActualFireRate = 0;
         ShipBody = this.GetComponent<Rigidbody2D>();
+        JetsInstance = Instantiate(JetsTemplate);
+        JetsInstance.Init(this.gameObject);
+        JetsInstance.transform.SetParent(MainScript.GetInstance().LoaderInstance.transform);
+
     }
 	
 	// Update is called once per frame

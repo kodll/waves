@@ -138,7 +138,7 @@ public class Loader : MonoBehaviour {
             {
                 if (buttonpressed == 0) //Start
                 {
-                    LoadLevel("Scenes/LevelTest01");
+                    LoadLevel("Scenes/LevelTest02");
                 }
                 else if (buttonpressed == 1) //Config
                 {

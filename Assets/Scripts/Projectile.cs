@@ -8,8 +8,9 @@ public class Projectile : MonoBehaviour {
     public float speedlimit;
     public float initspeed;
     public float damage;
+    public bool following;
+    public bool player;
     public GameObject wallexplosion;
-    float projectilelimitdeg;
     Rigidbody2D projectilebody;
     int nearestenemyID;
     // Use this for initialization
@@ -49,7 +50,6 @@ public class Projectile : MonoBehaviour {
     {
         projectilebody = this.gameObject.GetComponent<Rigidbody2D>();
         nearestenemyID = enemyID;
-        projectilelimitdeg = limitdeg;
         projectilebody.velocity = this.transform.right * initspeed;
     }
 
@@ -64,7 +64,14 @@ public class Projectile : MonoBehaviour {
             Destroy(inst.gameObject, 1);
             Destroy(this.gameObject);
         }
-        else
+        else if (coll.gameObject.tag == "PlayerShip")
+        {
+            MainScript.GetInstance().PlayerShipInstance.SetDamage(damage);
+            inst = Instantiate(wallexplosion, this.transform.position, Quaternion.identity) as GameObject;
+            Destroy(inst.gameObject, 1);
+            Destroy(this.gameObject);
+        }
+        else //walls
         {
 
             inst = Instantiate(wallexplosion, this.transform.position, Quaternion.identity) as GameObject;
@@ -75,7 +82,7 @@ public class Projectile : MonoBehaviour {
 
             Destroy(this.gameObject);
         }
-        
-        
+
+
     }
 }

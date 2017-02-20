@@ -52,7 +52,7 @@ public class MainScript : MonoBehaviour {
 
     void Start ()
     {
-        maxenemies = 200;
+        maxenemies = 500;
         EnemyShipField = new EnemyShipStruct[maxenemies];
     }
 
@@ -86,8 +86,18 @@ public class MainScript : MonoBehaviour {
             PlayerShipInstance.ActualHealth = MaxHealth;
             PlayerShipInstance.ButtonFire = false;
 
-            LevelLoaded = true;
+            //checking existing enemies
+            Enemy[] existingenemylist = (Enemy[])GameObject.FindObjectsOfType(typeof(Enemy));
+
             GuiInstance.InitGui();
+
+            for (i = 0; i < existingenemylist.Length; i++)
+            {
+                EnemyShipField[i].enemyinstance = existingenemylist[i];
+                EnemyShipField[i].enemybody = existingenemylist[i].GetComponent<Rigidbody2D>();
+                EnemyShipField[i].enemyinstance.SetId(i);
+            }
+            LevelLoaded = true;
         }
         else
         {

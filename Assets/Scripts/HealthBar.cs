@@ -13,7 +13,7 @@ public class HealthBar : MonoBehaviour {
     {
         if (displayedhealth > actualhealth)
         {
-            displayedhealth -= Time.deltaTime / 2;
+            displayedhealth -= Time.deltaTime;
         }
         if (displayedhealth< actualhealth)
         {
