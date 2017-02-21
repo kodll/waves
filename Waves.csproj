@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\EnemyWeapon.cs" />
     <Compile Include="Assets\Scripts\GUInterface.cs" />
     <Compile Include="Assets\Scripts\HealthBar.cs" />
+    <Compile Include="Assets\Scripts\Laser.cs" />
     <Compile Include="Assets\Scripts\LevelDefinition.cs" />
     <Compile Include="Assets\Scripts\Link.cs" />
     <Compile Include="Assets\Scripts\Loader.cs" />
