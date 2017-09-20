@@ -124,6 +124,9 @@ public class ShipController : MonoBehaviour {
     {
         joypad.x = Input.GetAxis("Horizontal");
         joypad.y = Input.GetAxis("Vertical");
+
+        joypad = joypad + MainScript.GetInstance().GuiInstance.VirtualJoystick.InputDirection;
+
         if (Input.GetButtonDown("Fire1"))
         {
             ButtonFire = true;

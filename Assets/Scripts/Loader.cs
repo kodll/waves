@@ -61,10 +61,12 @@ public class Loader : MonoBehaviour {
 
     public void OpenMenu(int menuID)
     {
+        MainScript.GetInstance().GuiInstance.ActivateJoystick(false);
         Debug.Log("Opening menu: " + menuID);
         MenuField[menuID].MenuInstance = MenuInit.Instantiate(MenuField[menuID].MenuPrefab);
         MenuField[menuID].MenuInstance.transform.SetParent(this.transform);
         StartCoroutine(EnableMenu(menuID, true));
+        
     }
 
     public void CloseMenu(int menuID)
@@ -138,13 +140,17 @@ public class Loader : MonoBehaviour {
             {
                 if (buttonpressed == 0) //Start
                 {
+                    LoadLevel("Scenes/LevelTest01");
+                }
+                else if (buttonpressed == 1) //Start
+                {
                     LoadLevel("Scenes/LevelTest02");
                 }
-                else if (buttonpressed == 1) //Config
+                else if (buttonpressed == 2) //Config
                 {
                     menuclicked = false;
                 }
-                else if (buttonpressed == 2)  //Exit
+                else if (buttonpressed == 3)  //Exit
                 {
                     StartCoroutine(EnableMenu(0, false));
                     OpenMenu(2);
@@ -181,6 +187,7 @@ public class Loader : MonoBehaviour {
     {
         CloseMenu(1);
         Time.timeScale = 1.0f;
+        MainScript.GetInstance().GuiInstance.ActivateJoystick(true);
     }
 
     public void LoadLevel(string level)
@@ -265,6 +272,7 @@ public class Loader : MonoBehaviour {
         activelevel = level;
         MainScript.GetInstance().InitLevel(true);
         MainScript.GetInstance().GuiInstance.Fade(false);
+        MainScript.GetInstance().GuiInstance.ActivateJoystick(true);
     }
 
 

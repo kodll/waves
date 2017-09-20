@@ -10,6 +10,8 @@ public class GUInterface : MonoBehaviour {
     public Text DisplayCoins;
     public Text DisplayMainGunAmmo;
     public Image FadeImage;
+    public VJHandler VirtualJoystick;
+
 
     public bool fading = false;
     float finalfade = 0;
@@ -22,6 +24,13 @@ public class GUInterface : MonoBehaviour {
         
 	}
 
+    public void ActivateJoystick (bool active)
+    {
+        VirtualJoystick.gameObject.SetActive(active);
+        VirtualJoystick.InputDirection = Vector3.zero;
+        VirtualJoystick.joystick.rectTransform.anchoredPosition = Vector3.zero;
+    }
+
     public void InitGui()
     {
         if (healthbarinstance == null)
@@ -30,6 +39,7 @@ public class GUInterface : MonoBehaviour {
             healthbarinstance.transform.SetParent(Camera.main.transform);
             AddCoins(0);
         }
+        ActivateJoystick(true);
     }
 
     public void AddCoins(int amount)
